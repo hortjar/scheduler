@@ -6,8 +6,8 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-} from "~/server/api/trpc";
-import { meetings } from "~/server/db/schema";
+} from "@/server/api/trpc";
+import { meetings } from "@/server/db/schema";
 
 export const meetingRouter = createTRPCRouter({
   get: publicProcedure

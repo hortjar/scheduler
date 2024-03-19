@@ -13,7 +13,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { auth } from "@clerk/nextjs";
-import { db } from "~/server/db";
+import { db } from "@/server/db";
 
 /**
  * 1. CONTEXT
