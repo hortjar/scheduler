@@ -1,13 +1,6 @@
-import { createId } from "@paralleldrive/cuid2";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
-import { meetings } from "@/server/db/schema";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const meetingRouter = createTRPCRouter({
   get: publicProcedure

@@ -2,13 +2,10 @@ import { LatLngExpression } from "leaflet";
 import { useState, type FC } from "react";
 import { Marker, Popup, useMapEvent } from "react-leaflet";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface SelectionMarkerProps {}
-
-export const SelectionMarker: FC<SelectionMarkerProps> = (props) => {
+export const SelectionMarker: FC = () => {
   const [selectedLocation, setSelectedLocation] = useState<LatLngExpression>();
 
-  const map = useMapEvent("click", (e) => {
+  useMapEvent("click", (e) => {
     console.log(e);
     setSelectedLocation(e.latlng);
   });

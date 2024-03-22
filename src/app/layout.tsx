@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCReactProvider } from "@/server/trpc/react";
 import { headers } from "next/headers";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ReactNode } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
