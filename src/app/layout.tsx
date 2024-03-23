@@ -5,6 +5,7 @@ import { TRPCReactProvider } from "@/server/trpc/react";
 import { headers } from "next/headers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ReactNode } from "react";
+import { Header } from "@/components/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +30,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <div className="flex justify-center w-full">
+              <div className="flex flex-col justify-center items-center w-[50%]">
+                <Header />
+                <div className="w-[93%]">{children}</div>
+              </div>
+            </div>
           </ThemeProvider>
         </TRPCReactProvider>
       </body>
