@@ -10,6 +10,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { H4 } from "./ui/typography";
+import Link from "next/link";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface HeaderProps {}
@@ -20,7 +21,9 @@ export const Header: FC<HeaderProps> = () => {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <H4>Scheduler</H4>
+            <Link href={"/"}>
+              <H4>Scheduler</H4>
+            </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
