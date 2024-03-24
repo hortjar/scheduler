@@ -31,7 +31,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <div className="flex justify-center w-full">
-              <div className="flex flex-col justify-center items-center w-[50%]">
+              <div className="flex flex-col justify-center items-center xl:w-[50%] w-[95%]">
                 <Header />
                 <div className="w-[93%]">{children}</div>
               </div>

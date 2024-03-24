@@ -22,7 +22,7 @@ export default function Map(props: MapProps) {
       center={defaultCenter}
       zoom={13}
       scrollWheelZoom={true}
-      className="h-full w-full"
+      className="h-full w-full z-0"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
