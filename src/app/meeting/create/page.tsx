@@ -27,6 +27,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { H4 } from "@/components/ui/typography";
 import { Switch } from "@/components/ui/switch";
+import { api } from "@/trpc/react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -34,10 +35,12 @@ const formSchema = z.object({
   }),
   private: z.boolean().default(false),
   virtual: z.boolean().default(false),
-  coordinates: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-  }),
+  coordinates: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+    })
+    .optional(),
   dates: z.array(z.date()),
 });
 
@@ -56,8 +59,17 @@ export default function CreateMeeting() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const createMeeting = api.meeting.create.useMutation({
+    onSuccess: (result) => {
+      console.log(result);
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("submitted", values);
+    await createMeeting.mutateAsync({
+      name: values.name,
+    });
   }
 
   function locationSelected(latLong: LatLng) {
@@ -191,7 +203,7 @@ export default function CreateMeeting() {
                     />
                   </div>
                 </div>
-                <div className="h-[400px]">
+                <div className="h-[400px]" suppressHydrationWarning>
                   <MapWithNoSSR locationSelected={locationSelected} />
                 </div>
               </>

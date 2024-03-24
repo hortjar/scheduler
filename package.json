@@ -48,7 +48,7 @@
     "react-leaflet": "^4.2.1",
     "react-resizable-panels": "^2.0.13",
     "react-spinners": "^0.13.8",
-    "superjson": "^2.2.1",
+    "superjson": "^1.13.3",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "typescript-eslint": "^7.3.1",

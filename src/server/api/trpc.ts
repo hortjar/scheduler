@@ -12,7 +12,6 @@ import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { auth } from "@clerk/nextjs";
 import { db } from "@/server/db";
 
 /**
@@ -38,8 +37,11 @@ interface CreateContextOptions {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 export const createInnerTRPCContext = async (opts: CreateContextOptions) => {
-  const session = auth();
+  // const session = auth();
 
+  const session = {
+    user: {},
+  };
   return {
     session,
     headers: opts.headers,
