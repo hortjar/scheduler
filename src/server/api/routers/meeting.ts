@@ -37,13 +37,18 @@ export const meetingRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       console.log("mutating", input);
-      const result = await ctx.db.insert(meetings).values({
-        name: input.name,
-        coordinates: input.coordinates,
-        private: input.private,
-        virtual: input.virtual,
-      });
-      console.log(result);
+      const result = await ctx.db
+        .insert(meetings)
+        .values({
+          name: input.name,
+          coordinates: input.coordinates,
+          private: input.private,
+          virtual: input.virtual,
+        })
+        .returning({
+          creatorKey: meetings.creatorKey,
+          urlKey: meetings.urlKey,
+        });
       return result;
     }),
 });

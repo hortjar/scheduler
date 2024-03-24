@@ -28,6 +28,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { H4 } from "@/components/ui/typography";
 import { Switch } from "@/components/ui/switch";
 import { api } from "@/trpc/react";
+import { updateLocalCreatorKeys } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -49,6 +51,8 @@ export default function CreateMeeting() {
     ssr: false,
   });
 
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,17 +63,16 @@ export default function CreateMeeting() {
     },
   });
 
-  const createMeeting = api.meeting.create.useMutation({
-    onSuccess: (result) => {
-      console.log(result);
-    },
-  });
+  const createMeeting = api.meeting.create.useMutation();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("submitted", values);
-    await createMeeting.mutateAsync({
+    const res = await createMeeting.mutateAsync({
       name: values.name,
     });
+    if (res && res.length > 0) {
+      updateLocalCreatorKeys(res[0]!.creatorKey);
+      router.push(res[0]!.urlKey);
+    }
   }
 
   function locationSelected(latLong: LatLng) {

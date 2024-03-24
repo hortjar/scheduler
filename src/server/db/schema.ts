@@ -1,3 +1,4 @@
+import { createId } from "@/lib/utils";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
@@ -24,6 +25,9 @@ export const meetings = pgTable(
     name: varchar("name", { length: 255 }).notNull(),
     private: boolean("private").notNull().default(false).notNull(),
     creatorKey: uuid("creator_key").defaultRandom().notNull(),
+    urlKey: varchar("urlKey", { length: 10 })
+      .notNull()
+      .$defaultFn(() => createId()),
     virtual: boolean("virtual").default(false).notNull(),
     coordinates: json("coordinates").$type<Coordinates>(),
     createdAt: timestamp("created_at")
