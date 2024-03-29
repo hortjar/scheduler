@@ -46,7 +46,7 @@ export const meetingRelations = relations(meetings, ({ many }) => ({
 
 export const meetingDates = pgTable("meeting_date", {
   id: uuid("id").defaultRandom().primaryKey(),
-  date: date("date").notNull(),
+  date: date("date", { mode: "date" }).notNull(),
   meetingId: uuid("meetingId").notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
