@@ -66,9 +66,7 @@ export default function CreateMeeting() {
   const createMeeting = api.meeting.create.useMutation();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await createMeeting.mutateAsync({
-      name: values.name,
-    });
+    const res = await createMeeting.mutateAsync(values);
     if (res && res.length > 0) {
       updateLocalCreatorKeys(res[0]!.creatorKey);
       router.push(res[0]!.urlKey);
