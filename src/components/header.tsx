@@ -3,11 +3,8 @@
 import { type FC } from "react";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { H4 } from "./ui/typography";
 import Link from "next/link";
@@ -26,10 +23,7 @@ export const Header: FC<HeaderProps> = () => {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink>Link</NavigationMenuLink>
-            </NavigationMenuContent>
+            <Link href={"/meeting/create"}>Create</Link>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
