@@ -2,7 +2,6 @@ import { createId } from "@/lib/utils";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
-  date,
   index,
   json,
   pgTableCreator,
@@ -46,7 +45,7 @@ export const meetingRelations = relations(meetings, ({ many }) => ({
 
 export const meetingDates = pgTable("meeting_date", {
   id: uuid("id").defaultRandom().primaryKey(),
-  date: date("date", { mode: "date" }).notNull(),
+  date: timestamp("date", { mode: "date" }).notNull(),
   meetingId: uuid("meetingId").notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
