@@ -25,3 +25,9 @@ export const createId = init({
   length: 10,
   fingerprint: "a-custom-host-fingerprint",
 });
+
+export function sortByKey<T>(arr: Array<T>, key: keyof T): Array<T> {
+  return arr.sort((a, b) => {
+    return Number(a[key] < b[key]) - 1;
+  });
+}
