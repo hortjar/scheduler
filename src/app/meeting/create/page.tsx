@@ -30,6 +30,7 @@ import { Switch } from "@/components/ui/switch";
 import { api } from "@/trpc/react";
 import { updateLocalCreatorKeys } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -86,6 +87,16 @@ export default function CreateMeeting() {
       return;
     }
     form.setValue("dates", date);
+  }
+
+  function onTimeChange(value: string, date: Date) {
+    const dates = form.getValues().dates;
+    const existingDate = dates.find(
+      (x) => x.toDateString() == date.toDateString()
+    );
+    const splitTime = value.split(":");
+    existingDate?.setHours(Number(splitTime[0]));
+    existingDate?.setMinutes(Number(splitTime[1]));
   }
 
   return (
@@ -219,13 +230,37 @@ export default function CreateMeeting() {
                       Dates
                     </FormLabel>
                     <FormControl>
-                      <Calendar
-                        mode="multiple"
-                        selected={field.value}
-                        onSelect={(e) => dateSelected(e)}
-                        initialFocus
-                        className="w-full h-[355px]"
-                      />
+                      <div className="flex flex-col gap-3">
+                        <Calendar
+                          mode="multiple"
+                          selected={field.value}
+                          onSelect={(e) => dateSelected(e)}
+                          initialFocus
+                          className="w-full h-[355px]"
+                        />
+                        <div className="flex flex-col gap-3">
+                          {field.value.map((x) => (
+                            <div
+                              key={x.toISOString()}
+                              className="flex flex-row gap-3"
+                            >
+                              <Input
+                                type="date"
+                                value={format(x, "yyyy-MM-dd")}
+                                readOnly
+                                disabled
+                              />
+                              <Input
+                                type="time"
+                                defaultValue={format(x, "hh:mm")}
+                                onChange={(e) =>
+                                  onTimeChange(e.target.value, x)
+                                }
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </FormControl>
                     <FormDescription>
                       You have selected {form.getValues().dates.length} date(s)
