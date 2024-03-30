@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { init } from "@paralleldrive/cuid2";
+import { localStorageHelper } from "./local-storage-helper";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,12 +13,12 @@ export function updateLocalCreatorKeys(creatorKey: string) {
   }
 
   const key = "creatorKeys";
-  const creatorKeysString = localStorage.getItem(key);
+  const creatorKeysString = localStorageHelper.getItem(key);
   let creatorKeys = [creatorKey];
   if (creatorKeysString) {
     creatorKeys = [...JSON.parse(creatorKeysString), creatorKey];
   }
-  localStorage.setItem(key, JSON.stringify(creatorKeys));
+  localStorageHelper.setItem(key, JSON.stringify(creatorKeys));
 }
 
 export const createId = init({

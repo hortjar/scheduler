@@ -1,6 +1,8 @@
-import DateBlock from "@/components/ui/date-block";
-import { H3, H4 } from "@/components/ui/typography";
+import AttendMeeting from "@/components/ui/attend-meeting";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { H4 } from "@/components/ui/typography";
 import { api } from "@/trpc/server";
+import { redirect } from "next/navigation";
 
 export default async function MeetingPage({
   params,
@@ -11,15 +13,19 @@ export default async function MeetingPage({
     key: params.meetingKey,
   });
 
+  if (!meeting) {
+    redirect("/");
+  }
+
   return (
-    <div className="flex flex-col w-full gap-5">
-      <H3>Meeting {meeting?.name}</H3>
-      <H4>Dates</H4>
-      <div className="flex flex-row gap-3 flex-wrap">
-        {meeting?.dates.map((x) => (
-          <DateBlock key={"date_" + x.id} date={x.date} />
-        ))}
-      </div>
-    </div>
+    <Card className="w-full rounded-3xl">
+      <CardHeader>
+        <CardTitle>Meeting {meeting.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <H4>Dates</H4>
+        <AttendMeeting dates={meeting.dates} />
+      </CardContent>
+    </Card>
   );
 }
