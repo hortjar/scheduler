@@ -16,9 +16,9 @@ export default async function MeetingPage({
       <H3>Meeting {meeting?.name}</H3>
       <H4>Dates</H4>
       <div className="flex flex-row gap-3 flex-wrap">
-        {meeting?.dates
-          .sort((a, b) => Number(a.date > b.date) - 1)
-          .map((x) => <DateBlock key={"date_" + x.id} date={x.date} />)}
+        {meeting?.dates.map((x) => (
+          <DateBlock key={"date_" + x.id} date={x.date} />
+        ))}
       </div>
     </div>
   );
