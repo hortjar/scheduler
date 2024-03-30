@@ -10,6 +10,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./collapsible";
+import { ChevronsUpDown, User } from "lucide-react";
+import Separator from "./separator";
 
 export interface DateBlockProps extends HTMLAttributes<HTMLDivElement> {
   date: Date;
@@ -30,13 +32,14 @@ const DateBlock = forwardRef<HTMLDivElement, DateBlockProps>(
     }
 
     return (
-      <div ref={ref} {...props} className="flex flex-col gap-2">
+      <div ref={ref} {...props} className="flex flex-col">
         <Card
           className={cn(
             "flex flex-col gap-2 rounded-3xl p-5 items-center justify-center w-40 ease-in-out duration-300",
             className,
             onDateClicked ? "hover:ring-2 hover:ring-ring cursor-pointer" : "",
-            isSelected ? "ring-2" : ""
+            isSelected ? "ring-2" : "",
+            attendees && attendees.length > 0 ? "rounded-b-none" : ""
           )}
           onClick={onDateClick}
         >
@@ -46,14 +49,30 @@ const DateBlock = forwardRef<HTMLDivElement, DateBlockProps>(
           <span className="text-sm">{format(date, "p")}</span>
         </Card>
         {attendees && attendees.length > 0 && (
-          <Collapsible>
-            <CollapsibleTrigger>
-              {attendees?.length} attendee{attendees.length == 1 ? "" : "s"}
+          <Collapsible
+            className={cn(
+              "border rounded-3xl rounded-t-none px-5 py-2 w-full ease-in-out duration-300 text-gray-100",
+              isSelected ? "ring-2" : ""
+            )}
+          >
+            <CollapsibleTrigger className="w-full">
+              <div className="flex flex-row justify-between items-center">
+                <div>
+                  {attendees?.length} attendee{attendees.length == 1 ? "" : "s"}
+                </div>
+                <ChevronsUpDown className="h-4 w-4" />
+              </div>
             </CollapsibleTrigger>
-            <CollapsibleContent>
-              {attendees.map((x) => (
-                <div key={x}>{x}</div>
-              ))}
+            <CollapsibleContent className="w-full">
+              <div className="flex flex-col">
+                <Separator />
+                {attendees.map((x) => (
+                  <div className="flex flex-row gap-2 items-center" key={x}>
+                    <User className="text-gray-300 size-5" />
+                    <span>{x}</span>
+                  </div>
+                ))}
+              </div>
             </CollapsibleContent>
           </Collapsible>
         )}
