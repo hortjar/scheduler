@@ -1,7 +1,10 @@
 import { api } from "@/trpc/server";
 import MeetingPreview from "./meeting-preview";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function PrivateMeetings() {
+  auth().protect();
+
   const meetings = await api.meeting.getAllForUser.query();
 
   return (
