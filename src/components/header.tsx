@@ -3,14 +3,13 @@
 import { type FC } from "react";
 import { H4 } from "./ui/typography";
 import Link from "next/link";
-import { PlusIcon, User } from "lucide-react";
+import { LogInIcon, PlusIcon } from "lucide-react";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "./ui/navigation-menu";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface HeaderProps {}
@@ -28,13 +27,15 @@ export const Header: FC<HeaderProps> = () => {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>
-              <div className="flex flex-row gap-1 items-center">
-                <User className="text-muted-foreground" />
-                <div>User</div>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <div className="flex flex-row gap-1 justify-center items-center">
+                <LogInIcon className="text-sm text-muted-foreground" />
+                <SignInButton />
               </div>
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>Name</NavigationMenuContent>
+            </SignedOut>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>

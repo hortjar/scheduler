@@ -13,6 +13,11 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import {
+  getAuth,
+  SignedInAuthObject,
+  SignedOutAuthObject,
+} from "@clerk/nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -24,6 +29,7 @@ import { db } from "@/server/db";
 
 interface CreateContextOptions {
   headers: Headers;
+  auth: SignedInAuthObject | SignedOutAuthObject;
 }
 
 /**
@@ -37,13 +43,8 @@ interface CreateContextOptions {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 export const createInnerTRPCContext = async (opts: CreateContextOptions) => {
-  // const session = auth();
-
-  const session = {
-    user: {},
-  };
   return {
-    session,
+    session: opts.auth,
     headers: opts.headers,
     db,
   };
@@ -60,6 +61,7 @@ export const createTRPCContext = async (opts: { req: NextRequest }) => {
 
   return await createInnerTRPCContext({
     headers: opts.req.headers,
+    auth: getAuth(opts.req),
   });
 };
 
