@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./card";
+} from "../ui/card";
 import Link from "next/link";
 import { format } from "date-fns";
 
