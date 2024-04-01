@@ -24,6 +24,7 @@ export const meetings = pgTable(
     name: varchar("name", { length: 255 }).notNull(),
     private: boolean("private").notNull().default(false).notNull(),
     creatorKey: uuid("creator_key").defaultRandom().notNull(),
+    creator_id: varchar("creator_id"),
     urlKey: varchar("urlKey", { length: 10 })
       .notNull()
       .$defaultFn(() => createId()),

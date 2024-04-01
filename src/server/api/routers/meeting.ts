@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { meetingDates, meetings } from "@/server/db/schema";
 import { InferInsertModel, asc, desc } from "drizzle-orm";
 
@@ -22,6 +26,15 @@ export const meetingRouter = createTRPCRouter({
   getAllPublic: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.meetings.findMany({
       where: (meetings, { eq }) => eq(meetings.private, false),
+      with: {
+        dates: true,
+      },
+      orderBy: [desc(meetings.createdAt)],
+    });
+  }),
+  getAllForUser: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.meetings.findMany({
+      where: (meetings, { eq }) => eq(meetings.creator_id, ctx.session.userId),
       with: {
         dates: true,
       },
@@ -70,6 +83,7 @@ export const meetingRouter = createTRPCRouter({
           coordinates: input.coordinates,
           private: input.private,
           virtual: input.virtual,
+          creator_id: ctx.session.userId,
         })
         .returning({
           id: meetings.id,
