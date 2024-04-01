@@ -1,4 +1,4 @@
-import AttendMeeting from "@/components/ui/attend-meeting";
+import AttendMeeting from "@/components/meetings/attend-meeting";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { H4 } from "@/components/ui/typography";
 import { api } from "@/trpc/server";
