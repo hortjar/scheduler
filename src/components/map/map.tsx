@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/Map.tsx
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -9,11 +11,12 @@ import { SetUserLocation } from "./set-user-location";
 
 interface MapProps {
   // eslint-disable-next-line no-unused-vars
-  locationSelected(latLong: LatLng): void;
+  locationSelected?(latLong: LatLng): void;
+  defaultLocation?: LatLng;
 }
 
 export default function Map(props: MapProps) {
-  const defaultCenter: LatLngExpression = {
+  const defaultCenter: LatLngExpression = props.defaultLocation ?? {
     lat: 51.505,
     lng: -0.09,
   };
@@ -29,7 +32,9 @@ export default function Map(props: MapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <SetUserLocation />
-      <SelectionMarker locationSelected={props.locationSelected} />
+      {props.locationSelected && (
+        <SelectionMarker locationSelected={props.locationSelected} />
+      )}
     </MapContainer>
   );
 }

@@ -23,6 +23,19 @@ export default async function MeetingPage({
         <CardTitle>Meeting {meeting.name}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
+        {meeting.coordinates && (
+          <>
+            <H4>Location</H4>
+            {/* <MeetingLocation
+              defaultLocation={
+                new LatLng(
+                  meeting.coordinates.latitude,
+                  meeting.coordinates.longitude
+                )
+              }
+            /> */}
+          </>
+        )}
         <H4>Dates</H4>
         <AttendMeeting dates={meeting.dates} />
       </CardContent>
