@@ -59,9 +59,11 @@ export const createInnerTRPCContext = async (opts: CreateContextOptions) => {
 export const createTRPCContext = async (opts: { req: NextRequest }) => {
   // Fetch stuff that depends on the request
 
+  const auth = getAuth(opts.req);
+
   return await createInnerTRPCContext({
     headers: opts.req.headers,
-    auth: getAuth(opts.req),
+    auth: auth,
   });
 };
 
@@ -112,7 +114,7 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session || !ctx.session.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
