@@ -1,3 +1,5 @@
+"use client";
+
 import { LatLng } from "leaflet";
 import { useState, type FC } from "react";
 import { Marker, Popup, useMapEvent } from "react-leaflet";

@@ -44,7 +44,7 @@ const DateBlock = forwardRef<HTMLDivElement, DateBlockProps>(
           onClick={onDateClick}
         >
           <span className="text-sm">{format(date, "eeee")}</span>
-          <H2 className="pb-0">{date.getDay()}</H2>
+          <H2 className="pb-0">{date.getDate()}</H2>
           <span className="font-bold">{format(date, "MMMM")}</span>
           <span className="text-sm">{format(date, "p")}</span>
         </Card>

@@ -10,7 +10,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-type Coordinates = {
+export type Coordinates = {
   latitude: number;
   longitude: number;
 };
