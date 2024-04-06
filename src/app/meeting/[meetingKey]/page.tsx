@@ -5,6 +5,7 @@ import { H4 } from "@/components/ui/typography";
 import { api } from "@/trpc/server";
 import { auth } from "@clerk/nextjs/server";
 import { Pencil } from "lucide-react";
+import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 
 export default async function MeetingPage({
@@ -20,6 +21,13 @@ export default async function MeetingPage({
   if (!meeting) {
     redirect("/");
   }
+
+  const MeetingLocationWithNoSSR = dynamic(
+    () => import("@/components/meetings/meeting-location"),
+    {
+      ssr: false,
+    }
+  );
 
   return (
     <Card className="w-full rounded-3xl">
@@ -40,14 +48,7 @@ export default async function MeetingPage({
         {meeting.coordinates && (
           <>
             <H4>Location</H4>
-            {/* <MeetingLocation
-              defaultLocation={
-                new LatLng(
-                  meeting.coordinates.latitude,
-                  meeting.coordinates.longitude
-                )
-              }
-            /> */}
+            <MeetingLocationWithNoSSR defaultLocation={meeting.coordinates} />
           </>
         )}
         <H4>Dates</H4>

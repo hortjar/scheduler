@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, type FC } from "react";
 import { useMap } from "react-leaflet";
 

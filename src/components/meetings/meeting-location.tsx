@@ -1,20 +1,18 @@
-import { LatLng } from "leaflet";
+"use client";
+
 import { HTMLAttributes, forwardRef } from "react";
-import dynamic from "next/dynamic";
+import { Coordinates } from "@/server/db/schema";
+import Map from "@/components/map/map";
 
 export interface MeetingLocationProps extends HTMLAttributes<HTMLDivElement> {
-  defaultLocation?: LatLng;
+  defaultLocation?: Coordinates;
 }
-
-const DynamicMap = dynamic(() => import("@/components/map/map"), {
-  ssr: false,
-});
 
 const MeetingLocation = forwardRef<HTMLDivElement, MeetingLocationProps>(
   ({ defaultLocation, ...props }, ref) => {
     return (
-      <div ref={ref} {...props}>
-        {window && <DynamicMap defaultLocation={defaultLocation} />}
+      <div ref={ref} {...props} className="h-[400px]">
+        <Map defaultLocation={defaultLocation} />
       </div>
     );
   }
