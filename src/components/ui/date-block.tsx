@@ -5,29 +5,25 @@ import { Card } from "./card";
 import { format } from "date-fns";
 import { H2 } from "./typography";
 import { cn } from "@/lib/utils";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "./collapsible";
-import { ChevronsUpDown, User } from "lucide-react";
-import Separator from "./separator";
+import { MeetingsPerAttendee } from "../meetings/attend-meeting";
+import { InferSelectModel } from "drizzle-orm";
+import { meetingDates } from "@/server/db/schema";
 
 export interface DateBlockProps extends HTMLAttributes<HTMLDivElement> {
-  date: Date;
+  date: InferSelectModel<typeof meetingDates>;
   onDateClicked?(date: Date, selected: boolean): void;
-  attendees?: string[];
+  attendance?: MeetingsPerAttendee[];
 }
 
 const DateBlock = forwardRef<HTMLDivElement, DateBlockProps>(
-  ({ onDateClicked, attendees, date, className, ...props }, ref) => {
+  ({ onDateClicked, attendance, date, className, ...props }, ref) => {
     const [isSelected, setIsSelected] = useState<boolean>(false);
 
     function onDateClick() {
       if (!onDateClicked) {
         return;
       }
-      onDateClicked(date, !isSelected);
+      onDateClicked(date.date, !isSelected);
       setIsSelected(!isSelected);
     }
 
@@ -39,43 +35,25 @@ const DateBlock = forwardRef<HTMLDivElement, DateBlockProps>(
             className,
             onDateClicked ? "hover:ring-2 hover:ring-ring cursor-pointer" : "",
             isSelected ? "ring-2" : "",
-            attendees && attendees.length > 0 ? "rounded-b-none" : ""
+            attendance && attendance.length > 0 ? "mb-2" : ""
           )}
           onClick={onDateClick}
         >
-          <span className="text-sm">{format(date, "eeee")}</span>
-          <H2 className="pb-0">{date.getDate()}</H2>
-          <span className="font-bold">{format(date, "MMMM")}</span>
-          <span className="text-sm">{format(date, "p")}</span>
+          <span className="text-sm">{format(date.date, "eeee")}</span>
+          <H2 className="pb-0">{date.date.getDate()}</H2>
+          <span className="font-bold">{format(date.date, "MMMM")}</span>
+          <span className="text-sm">{format(date.date, "p")}</span>
         </Card>
-        {attendees && attendees.length > 0 && (
-          <Collapsible
-            className={cn(
-              "border rounded-3xl rounded-t-none px-5 py-2 w-full ease-in-out duration-300 text-gray-100",
-              isSelected ? "ring-2" : ""
-            )}
-          >
-            <CollapsibleTrigger className="w-full">
-              <div className="flex flex-row justify-between items-center">
-                <div>
-                  {attendees?.length} attendee{attendees.length == 1 ? "" : "s"}
-                </div>
-                <ChevronsUpDown className="h-4 w-4" />
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="w-full">
-              <div className="flex flex-col">
-                <Separator />
-                {attendees.map((x) => (
-                  <div className="flex flex-row gap-2 items-center" key={x}>
-                    <User className="text-gray-300 size-5" />
-                    <span>{x}</span>
-                  </div>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
+        {attendance &&
+          attendance.map((x) => (
+            <div
+              key={`${date.id}_${x.userId}`}
+              className={cn(
+                x.meetingIds.includes(date.id) ? "bg-primary" : "bg-secondary",
+                "w-40 h-10 rounded-lg"
+              )}
+            ></div>
+          ))}
       </div>
     );
   }

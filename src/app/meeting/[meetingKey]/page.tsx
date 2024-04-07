@@ -51,7 +51,7 @@ export default async function MeetingPage({
             <MeetingLocationWithNoSSR defaultLocation={meeting.coordinates} />
           </>
         )}
-        <H4>Dates</H4>
+        <H4>Attendance</H4>
         <AttendMeeting dates={meeting.dates} />
       </CardContent>
     </Card>

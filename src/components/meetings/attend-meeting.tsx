@@ -9,9 +9,10 @@ import { localStorageHelper } from "@/lib/local-storage-helper";
 import { useUser } from "@clerk/nextjs";
 import UsernameDialog from "./username-dialog";
 
-interface AttendeesPerID {
-  id: string;
-  attendees: string[];
+export interface MeetingsPerAttendee {
+  userId: string;
+  userName: string;
+  meetingIds: string[];
 }
 
 export interface AttendMeetingProps extends HTMLAttributes<HTMLDivElement> {
@@ -21,40 +22,50 @@ export interface AttendMeetingProps extends HTMLAttributes<HTMLDivElement> {
 const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
   ({ dates, className, ...props }, ref) => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [attendees, setAttendees] = useState<AttendeesPerID[]>([]);
+    const [attendances, setAttendance] = useState<MeetingsPerAttendee[]>([]);
     const user = useUser();
 
     function onDateClicked(date: Date, selected: boolean, id: string) {
-      if (!localStorageHelper.hasKey("username") && !user.isSignedIn) {
+      if (
+        !localStorageHelper.hasKey("username") &&
+        !localStorageHelper.hasKey("user_id") &&
+        !user.isSignedIn
+      ) {
         setIsDialogOpen(true);
         return;
       }
 
-      const username =
+      const userName =
         user.user?.fullName ?? localStorageHelper.getItem("username")!;
+      const userId = user.user?.id ?? localStorageHelper.getItem("user_id")!;
 
-      setAttendees((originalAttendees) => {
-        const idAttendees = originalAttendees.find((x) => x.id == id) ?? {
-          id: id,
-          attendees: [],
-        };
-
-        if (selected) {
-          if (!idAttendees.attendees.includes(username)) {
-            idAttendees.attendees.push(username);
-          }
+      let attendance = attendances.find((x) => x.userId == userId);
+      let newAttendees = [];
+      if (attendance) {
+        if (attendance.meetingIds.includes(id)) {
+          attendance.meetingIds = attendance.meetingIds.filter((x) => x != id);
         } else {
-          idAttendees.attendees = idAttendees.attendees.filter(
-            (x) => x != username
-          );
+          attendance.meetingIds.push(id);
         }
-        console.log(idAttendees);
-        return [...originalAttendees.filter((x) => x.id != id), idAttendees];
-      });
+
+        if (attendance.meetingIds.length == 0) {
+          return attendances.filter((x) => x.userId != userId);
+        }
+        newAttendees = attendances;
+      } else {
+        attendance = {
+          userId,
+          userName,
+          meetingIds: [id],
+        };
+        newAttendees = [...attendances, attendance];
+      }
+      setAttendance(newAttendees);
     }
 
     function onDialogSubmit(name: string) {
       localStorageHelper.setItem("username", name);
+      localStorageHelper.setItem("user_id", `local_${crypto.randomUUID()}`);
       setIsDialogOpen(false);
     }
 
@@ -66,18 +77,30 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
       <div
         ref={ref}
         {...props}
-        className={cn(className, "flex flex-row gap-3 flex-wrap")}
+        className={cn(className, "flex flex-row gap-10")}
       >
-        {dates.map((x) => (
-          <DateBlock
-            key={"date_" + x.id}
-            date={x.date}
-            onDateClicked={(date, selected) =>
-              onDateClicked(date, selected, x.id)
-            }
-            attendees={attendees.find((y) => y.id == x.id)?.attendees}
-          />
-        ))}
+        <div className="flex flex-col gap-2 pt-44 min-w-28">
+          {attendances.map((x) => (
+            <div key={x.userId} className="flex items-center h-10">
+              {x.userName}
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col gap-2 overflow-auto p-2 pb-6 lg:pb-2">
+          <div className="flex flex-row gap-3 row-start-1 col-start-1">
+            {dates.map((x) => (
+              <DateBlock
+                key={"date_" + x.id}
+                date={x}
+                onDateClicked={(date, selected) => {
+                  console.log("date clicked", new Date());
+                  onDateClicked(date, selected, x.id);
+                }}
+                attendance={attendances}
+              />
+            ))}
+          </div>
+        </div>
         <UsernameDialog
           open={isDialogOpen}
           onSubmit={onDialogSubmit}
