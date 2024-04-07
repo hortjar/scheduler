@@ -1,4 +1,6 @@
-import AttendMeeting from "@/components/meetings/attend-meeting";
+import AttendMeeting, {
+  MeetingsPerAttendee,
+} from "@/components/meetings/attend-meeting";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { H4 } from "@/components/ui/typography";
@@ -29,6 +31,31 @@ export default async function MeetingPage({
     }
   );
 
+  const attendances: MeetingsPerAttendee[] = [];
+  for (const meetingDate of meeting.dates) {
+    if (meetingDate.attendances.length == 0) {
+      continue;
+    }
+
+    for (const meetingDateAttendance of meetingDate.attendances) {
+      const userAttendance = attendances.find(
+        (x) => x.dbId == meetingDateAttendance.id
+      );
+
+      if (userAttendance) {
+        userAttendance.dateIds.push(meetingDateAttendance.meetingDateId);
+      } else {
+        attendances.push({
+          userId: meetingDateAttendance.userId,
+          userName: meetingDateAttendance.userName,
+          dateIds: [meetingDateAttendance.meetingDateId],
+          dbId: meetingDateAttendance.id,
+        });
+      }
+    }
+  }
+  console.log(attendances);
+
   return (
     <Card className="w-full rounded-3xl">
       <CardHeader>
@@ -51,8 +78,12 @@ export default async function MeetingPage({
             <MeetingLocationWithNoSSR defaultLocation={meeting.coordinates} />
           </>
         )}
-        <H4>Dates</H4>
-        <AttendMeeting dates={meeting.dates} />
+        <H4>Attendance</H4>
+        <AttendMeeting
+          attendances={attendances}
+          meetingId={meeting.id}
+          dates={meeting.dates}
+        />
       </CardContent>
     </Card>
   );

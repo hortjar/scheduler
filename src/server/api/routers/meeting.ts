@@ -5,8 +5,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { meetingDates, meetings } from "@/server/db/schema";
-import { InferInsertModel, asc, desc } from "drizzle-orm";
+import { meetingAttendances, meetingDates, meetings } from "@/server/db/schema";
+import { InferInsertModel, and, asc, desc, eq } from "drizzle-orm";
 
 export const meetingRouter = createTRPCRouter({
   get: publicProcedure
@@ -19,7 +19,11 @@ export const meetingRouter = createTRPCRouter({
       return ctx.db.query.meetings.findFirst({
         where: (meetings, { eq }) => eq(meetings.id, input.id),
         with: {
-          dates: true,
+          dates: {
+            with: {
+              attendances: true,
+            },
+          },
         },
       });
     }),
@@ -27,7 +31,11 @@ export const meetingRouter = createTRPCRouter({
     return ctx.db.query.meetings.findMany({
       where: (meetings, { eq }) => eq(meetings.private, false),
       with: {
-        dates: true,
+        dates: {
+          with: {
+            attendances: true,
+          },
+        },
       },
       orderBy: [desc(meetings.createdAt)],
     });
@@ -36,7 +44,11 @@ export const meetingRouter = createTRPCRouter({
     return ctx.db.query.meetings.findMany({
       where: (meetings, { eq }) => eq(meetings.creator_id, ctx.session.userId),
       with: {
-        dates: true,
+        dates: {
+          with: {
+            attendances: true,
+          },
+        },
       },
       orderBy: [desc(meetings.createdAt)],
     });
@@ -52,10 +64,52 @@ export const meetingRouter = createTRPCRouter({
         where: (meetings, { eq }) => eq(meetings.urlKey, input.key),
         with: {
           dates: {
+            with: {
+              attendances: true,
+            },
             orderBy: [asc(meetingDates.date)],
           },
         },
       });
+    }),
+  addAttendance: publicProcedure
+    .input(
+      z.object({
+        meetingId: z.string(),
+        meetingDateId: z.string(),
+        userId: z.string(),
+        userName: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .insert(meetingAttendances)
+        .values(input)
+        .returning({
+          id: meetingAttendances.id,
+        });
+      return result[0];
+    }),
+  removeAttendance: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .delete(meetingAttendances)
+        .where(
+          and(
+            eq(meetingAttendances.id, input.id),
+            eq(meetingAttendances.userId, input.userId)
+          )
+        )
+        .returning({
+          id: meetingAttendances.id,
+        });
+      return result[0];
     }),
   create: publicProcedure
     .input(
