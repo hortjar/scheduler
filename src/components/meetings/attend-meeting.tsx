@@ -8,24 +8,33 @@ import { meetingDates } from "@/server/db/schema";
 import { localStorageHelper } from "@/lib/local-storage-helper";
 import { useUser } from "@clerk/nextjs";
 import UsernameDialog from "./username-dialog";
+import { api } from "@/trpc/react";
 
 export interface MeetingsPerAttendee {
   userId: string;
   userName: string;
-  meetingIds: string[];
+  dbId: string;
+  dateIds: string[];
 }
 
 export interface AttendMeetingProps extends HTMLAttributes<HTMLDivElement> {
+  meetingId: string;
+  attendances: MeetingsPerAttendee[];
   dates: InferSelectModel<typeof meetingDates>[];
 }
 
 const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
-  ({ dates, className, ...props }, ref) => {
+  ({ meetingId, dates, className, ...props }, ref) => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [attendances, setAttendance] = useState<MeetingsPerAttendee[]>([]);
+    const [attendances, setAttendance] = useState<MeetingsPerAttendee[]>(
+      props.attendances
+    );
     const user = useUser();
 
-    function onDateClicked(date: Date, selected: boolean, id: string) {
+    const addDbAttendance = api.meeting.addAttendance.useMutation();
+    const removeDbAttendance = api.meeting.removeAttendance.useMutation();
+
+    async function onDateClicked(date: Date, selected: boolean, id: string) {
       if (
         !localStorageHelper.hasKey("username") &&
         !localStorageHelper.hasKey("user_id") &&
@@ -41,25 +50,46 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
 
       let attendance = attendances.find((x) => x.userId == userId);
       let newAttendees = [];
+      let addAttendance = true;
       if (attendance) {
-        if (attendance.meetingIds.includes(id)) {
-          attendance.meetingIds = attendance.meetingIds.filter((x) => x != id);
+        if (attendance.dateIds.includes(id)) {
+          attendance.dateIds = attendance.dateIds.filter((x) => x != id);
+          addAttendance = false;
         } else {
-          attendance.meetingIds.push(id);
+          attendance.dateIds.push(id);
         }
 
-        if (attendance.meetingIds.length == 0) {
-          return attendances.filter((x) => x.userId != userId);
+        if (attendance.dateIds.length == 0) {
+          newAttendees = attendances.filter((x) => x.userId != userId);
         }
         newAttendees = attendances;
       } else {
         attendance = {
           userId,
           userName,
-          meetingIds: [id],
+          dateIds: [id],
+          dbId: "",
         };
         newAttendees = [...attendances, attendance];
       }
+
+      if (addAttendance) {
+        attendance.dbId =
+          (
+            await addDbAttendance.mutateAsync({
+              meetingId,
+              userId,
+              userName,
+              meetingDateId: id,
+            })
+          )?.id ?? "";
+      } else {
+        await removeDbAttendance.mutateAsync({
+          id: attendance.dbId,
+          userId,
+        });
+      }
+
       setAttendance(newAttendees);
     }
 
@@ -71,6 +101,10 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
 
     function dialogOpenChange(open: boolean) {
       setIsDialogOpen(open);
+    }
+
+    if (!user.isLoaded) {
+      return <></>;
     }
 
     return (

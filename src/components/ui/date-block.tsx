@@ -49,7 +49,7 @@ const DateBlock = forwardRef<HTMLDivElement, DateBlockProps>(
             <div
               key={`${date.id}_${x.userId}`}
               className={cn(
-                x.meetingIds.includes(date.id) ? "bg-primary" : "bg-secondary",
+                x.dateIds.includes(date.id) ? "bg-primary" : "bg-secondary",
                 "w-40 h-10 rounded-lg"
               )}
             ></div>

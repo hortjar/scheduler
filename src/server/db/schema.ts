@@ -55,18 +55,23 @@ export const meetingDates = pgTable("meeting_date", {
   updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-export const meetingDateRelations = relations(meetingDates, ({ one }) => ({
-  meeting: one(meetings, {
-    fields: [meetingDates.meetingId],
-    references: [meetings.id],
-  }),
-}));
+export const meetingDateRelations = relations(
+  meetingDates,
+  ({ one, many }) => ({
+    meeting: one(meetings, {
+      fields: [meetingDates.meetingId],
+      references: [meetings.id],
+    }),
+    attendances: many(meetingAttendances),
+  })
+);
 
 export const meetingAttendances = pgTable("meeting_attendance", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("userId").notNull(),
   userName: text("userName").notNull(),
   meetingId: uuid("meetingId").notNull(),
+  meetingDateId: uuid("meetingDateId").notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -79,6 +84,10 @@ export const meetingAttendancesRelations = relations(
     meeting: one(meetings, {
       fields: [meetingAttendances.meetingId],
       references: [meetings.id],
+    }),
+    date: one(meetingDates, {
+      fields: [meetingAttendances.meetingDateId],
+      references: [meetingDates.id],
     }),
   })
 );
