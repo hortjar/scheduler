@@ -1,23 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { HTMLAttributes, forwardRef, useRef, useState } from "react";
+import { HTMLAttributes, forwardRef, useState } from "react";
 import DateBlock from "../ui/date-block";
 import { InferSelectModel } from "drizzle-orm";
 import { meetingDates } from "@/server/db/schema";
 import { localStorageHelper } from "@/lib/local-storage-helper";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
 import { useUser } from "@clerk/nextjs";
+import UsernameDialog from "./username-dialog";
 
 interface AttendeesPerID {
   id: string;
@@ -32,7 +22,6 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
   ({ dates, className, ...props }, ref) => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [attendees, setAttendees] = useState<AttendeesPerID[]>([]);
-    const usernameRef = useRef<HTMLInputElement | null>(null);
     const user = useUser();
 
     function onDateClicked(date: Date, selected: boolean, id: string) {
@@ -64,15 +53,13 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
       });
     }
 
-    function dialogOpenChange(open: boolean) {
-      setIsDialogOpen(open);
+    function onDialogSubmit(name: string) {
+      localStorageHelper.setItem("username", name);
+      setIsDialogOpen(false);
     }
 
-    function onDialogSubmit() {
-      if (usernameRef.current) {
-        localStorageHelper.setItem("username", usernameRef.current?.value);
-      }
-      setIsDialogOpen(false);
+    function dialogOpenChange(open: boolean) {
+      setIsDialogOpen(open);
     }
 
     return (
@@ -91,38 +78,11 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
             attendees={attendees.find((y) => y.id == x.id)?.attendees}
           />
         ))}
-        <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
-          <DialogContent className="rounded-3xl">
-            <DialogHeader>
-              <DialogTitle>Hello!</DialogTitle>
-              <DialogDescription>
-                <p>
-                  It looks like this is your first time attending a meeting on
-                  this site. Please, pick a name so others know who is
-                  attending.
-                </p>
-                <p>
-                  If you do not want to set a username, you can sign in on the
-                  top right of your screen.
-                </p>
-              </DialogDescription>
-            </DialogHeader>
-            <div>
-              {" "}
-              <div className="flex flex-row gap-3 items-center justify-center">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input id="name" className="col-span-3" ref={usernameRef} />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit" onClick={onDialogSubmit}>
-                Submit
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <UsernameDialog
+          open={isDialogOpen}
+          onSubmit={onDialogSubmit}
+          onOpenChange={dialogOpenChange}
+        />
       </div>
     );
   }
