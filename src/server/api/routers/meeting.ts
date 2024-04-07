@@ -5,8 +5,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { meetingDates, meetings } from "@/server/db/schema";
-import { InferInsertModel, asc, desc } from "drizzle-orm";
+import { meetingAttendances, meetingDates, meetings } from "@/server/db/schema";
+import { InferInsertModel, and, asc, desc, eq } from "drizzle-orm";
 
 export const meetingRouter = createTRPCRouter({
   get: publicProcedure
@@ -56,6 +56,44 @@ export const meetingRouter = createTRPCRouter({
           },
         },
       });
+    }),
+  addAttendance: publicProcedure
+    .input(
+      z.object({
+        meetingId: z.string(),
+        userId: z.string(),
+        userName: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .insert(meetingAttendances)
+        .values(input)
+        .returning({
+          id: meetingAttendances.id,
+        });
+      return result[0];
+    }),
+  removeAttendance: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .delete(meetingAttendances)
+        .where(
+          and(
+            eq(meetingAttendances.id, input.id),
+            eq(meetingAttendances.userId, input.userId)
+          )
+        )
+        .returning({
+          id: meetingAttendances.id,
+        });
+      return result[0];
     }),
   create: publicProcedure
     .input(
