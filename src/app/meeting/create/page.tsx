@@ -110,10 +110,7 @@ export default function CreateMeeting() {
         </CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form
-          onUsernameDialogSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardContent className="flex flex-col gap-5">
             <FormField
               control={form.control}
