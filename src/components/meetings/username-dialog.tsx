@@ -15,17 +15,17 @@ import { Button } from "../ui/button";
 
 export interface UsernameDialogProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
-  onSubmit(name: string): void;
+  onUsernameSubmit(name: string): void;
   onOpenChange(open: boolean): void;
 }
 
 const UsernameDialog = forwardRef<HTMLDivElement, UsernameDialogProps>(
-  ({ open, onSubmit, onOpenChange, ...props }, ref) => {
+  ({ open, onUsernameSubmit, onOpenChange, ...props }, ref) => {
     const usernameRef = useRef<HTMLInputElement | null>(null);
 
     function onDialogSubmit() {
       if (usernameRef.current?.value) {
-        onSubmit(usernameRef.current.value);
+        onUsernameSubmit(usernameRef.current.value);
       }
     }
 

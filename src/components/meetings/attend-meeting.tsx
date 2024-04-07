@@ -103,7 +103,7 @@ const AttendMeeting = forwardRef<HTMLDivElement, AttendMeetingProps>(
         </div>
         <UsernameDialog
           open={isDialogOpen}
-          onSubmit={onDialogSubmit}
+          onUsernameSubmit={onDialogSubmit}
           onOpenChange={dialogOpenChange}
         />
       </div>
