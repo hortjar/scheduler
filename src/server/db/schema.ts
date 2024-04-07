@@ -7,6 +7,7 @@ import {
   pgTableCreator,
   timestamp,
   uuid,
+  text,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -60,3 +61,24 @@ export const meetingDateRelations = relations(meetingDates, ({ one }) => ({
     references: [meetings.id],
   }),
 }));
+
+export const meetingAttendances = pgTable("meeting_attendance", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("userId").notNull(),
+  userName: text("userName").notNull(),
+  meetingId: uuid("meetingId").notNull(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
+});
+
+export const meetingAttendancesRelations = relations(
+  meetingAttendances,
+  ({ one }) => ({
+    meeting: one(meetings, {
+      fields: [meetingAttendances.meetingId],
+      references: [meetings.id],
+    }),
+  })
+);
